@@ -1,0 +1,7 @@
+<<<<<<< HEAD
+Manifest.toml
+=======
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+>>>>>>> 69167ecc71f45fece0fb1de7d3e18aa46cac3125
