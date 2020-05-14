@@ -52,13 +52,12 @@ function refine(A::Point, B::Point)
           (Point(M.x, A.y), Point(B.x, M.y)), (M, B)]
 end
 
+function windingangle(vertices, i)
+  j = periodicindex(vertices, i+1)
+  return angle(vertices[i].value, vertices[j].value)
+end
 function windingangle(vertices::AbstractVector{Vertex})
-  θ = 0.0
-  for (i, vertex) ∈ enumerate(vertices)
-    j = periodicindex(vertices, i+1)
-    θ += angle(vertex.value, vertices[j].value)
-  end
-  return θ
+  return mapreduce(i -> windingangle(vertices, i), +, eachindex(vertices))
 end
 
 """
@@ -96,7 +95,7 @@ function boundingboxesofpoles!(solutions, f::T, A::Point, B::Point,
   else
     helper.numvertices = max(
       Int(round(helper.numvertices / 2)),
-      Int(round(default_initialnumvertices / 2)))
+      Int(round(default_minnumvertices)))
     for q ∈ refine(A, B)
       newvertices = distributevertices(f, q..., helper, vertices)
       boundingboxesofpoles!(solutions, f, q..., newvertices, helper,
@@ -112,6 +111,7 @@ function boundingboxesofpoles(f::T, A::AbstractVector{U}, B::AbstractVector{U};
   solutions = Vector{Tuple{Vector{Rational},Vector{Rational}}}()
   kwargs = Dict(kwargs)
   xtol_rel = get(kwargs, :xtol_rel, sqrt(eps()))
+  xtol_abs = get(kwargs, :xtol_abs, 0.0)
   stopval = get(kwargs, :stopval, sqrt(eps()))
   timelimit = get(kwargs, :timelimit, 600)
   initialnumvertices = get(kwargs, :initialnumvertices, default_initialnumvertices)
