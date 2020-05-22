@@ -124,8 +124,8 @@ end
       y = mock(x, 1, root)
       return y[1] + im * y[2]
     end
-    solutions = WindingNumbers.boundingboxesofpoles(solvemock, lower, upper,
-                                                    xtol_rel=rtol, stopval=eps())
+    solutions = WindingNumbers.boundingboxes(solvemock, lower, upper,
+                                             xtol_rel=rtol, stopval=eps())
     @test length(solutions) == 1
     @test allpointsinside
     length(solutions) == 1 || continue

@@ -81,7 +81,7 @@ function windingnumber(vertices::AbstractVector{Vertex})
 end
 
 
-function boundingboxesofpoles!(solutions, f::T, A::Point, B::Point,
+function boundingboxes!(solutions, f::T, A::Point, B::Point,
     vertices::AbstractVector{Vertex}, helper::Helper,
     xtol_rel, stopval, timelimit) where {T<:Function}
   t = @elapsed nfloat = round(windingnumber(vertices))
@@ -98,15 +98,15 @@ function boundingboxesofpoles!(solutions, f::T, A::Point, B::Point,
       Int(round(default_minnumvertices)))
     for q ∈ refine(A, B)
       newvertices = distributevertices(f, q..., helper, vertices)
-      boundingboxesofpoles!(solutions, f, q..., newvertices, helper,
-                            xtol_rel, stopval, timelimit)
+      boundingboxes!(solutions, f, q..., newvertices, helper,
+                     xtol_rel, stopval, timelimit)
     end
   end
   return nothing
 end
 
-function boundingboxesofpoles(f::T, A::AbstractVector{U}, B::AbstractVector{U};
-                              kwargs...) where {T<:Function, U<:Real}
+function boundingboxes(f::T, A::AbstractVector{U}, B::AbstractVector{U};
+                       kwargs...) where {T<:Function, U<:Real}
   @assert length(A) == length(B) == 2
   solutions = Vector{Tuple{Vector{Rational},Vector{Rational}}}()
   kwargs = Dict(kwargs)
@@ -123,7 +123,7 @@ function boundingboxesofpoles(f::T, A::AbstractVector{U}, B::AbstractVector{U};
   lower = Point(zeros(Rational, 2))
   upper = Point(ones(Rational, 2))
   vertices = distributevertices(f_local, lower, upper, helper)
-  boundingboxesofpoles!(solutions, f_local, lower, upper, vertices, helper,
+  boundingboxes!(solutions, f_local, lower, upper, vertices, helper,
                         xtol_rel, stopval, timelimit)
   return [(scale(solution[1]), scale(solution[2])) for solution ∈ solutions]
 end
